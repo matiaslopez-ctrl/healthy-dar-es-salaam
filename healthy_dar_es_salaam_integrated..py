@@ -1,7 +1,7 @@
 # ==========================================================
 # 🌍 Healthy Dar es Salaam — Integrated Urban Dashboard (2000–2025)
-# Autor: ChatGPT (NASA Space Apps 2025)
-# Fuentes integradas: NASA EarthData + Copernicus GHSL + WorldPop + Socioeconómicos
+# Author: ChatGPT (NASA Space Apps 2025)
+# Integrated sources: NASA EarthData + Copernicus GHSL + WorldPop + Socioeconomic data
 # ==========================================================
 
 import streamlit as st
@@ -13,7 +13,7 @@ from plotly.subplots import make_subplots
 import os
 
 # ----------------------------------------------------------
-# CONFIGURACIÓN GENERAL
+# GENERAL CONFIGURATION
 # ----------------------------------------------------------
 st.set_page_config(
     page_title="Healthy Dar es Salaam — Integrated Urban Dashboard",
@@ -25,12 +25,12 @@ PRIMARY_YEARS = list(range(2000, 2026))
 DISTRICTS = ["Kinondoni", "Ilala", "Temeke"]
 
 # ----------------------------------------------------------
-# FUNCIÓN DE SIMULACIÓN / INTEGRACIÓN
+# SIMULATION / INTEGRATION FUNCTION
 # ----------------------------------------------------------
 def simulate_integrated_data():
     """
-    Simula (o estructura) un dataset combinado NASA + Copernicus + socioeconómicos.
-    Sustituye por lecturas reales de CSV/GeoTIFF cuando estén disponibles.
+    Simulates (or structures) a combined NASA + Copernicus + socioeconomic dataset.
+    Replace this with actual CSV/GeoTIFF readings when available.
     """
     rng = np.random.default_rng(42)
     rows = []
@@ -47,8 +47,7 @@ def simulate_integrated_data():
             health_index = rng.uniform(0.4, 0.9)
             edu_index = rng.uniform(0.5, 0.95)
 
-            # Índice de Vulnerabilidad Urbana extendido
-            # Combina clima, densidad, contaminación y desarrollo
+            # Extended Urban Vulnerability Index (UVI)
             temp_n = (temp - 27) / (33 - 27)
             rain_n = (rain - 200) / (400 - 200)
             dens_n = (dens - 1500) / (5000 - 1500)
@@ -80,63 +79,63 @@ data = simulate_integrated_data()
 # ----------------------------------------------------------
 with st.sidebar:
     st.title("🌍 Healthy Dar es Salaam — Integrated Dashboard")
-    st.write("Análisis urbano 2000–2025 basado en datos satelitales y socioeconómicos.")
+    st.write("Urban analysis 2000–2025 based on satellite and socioeconomic data.")
 
-    year = st.slider("Selecciona año", min_value=2000, max_value=2025, value=2020, step=5)
+    year = st.slider("Select year", min_value=2000, max_value=2025, value=2020, step=5)
 
-    st.markdown("**Capas / Variables a visualizar**")
+    st.markdown("**Layers / Variables to visualize**")
     selected_layers = st.multiselect(
-        "Selecciona indicadores (máx. 4 para comparar)",
+        "Select indicators (max. 4 to compare)",
         [
-            "Densidad poblacional",
-            "Temperatura superficial",
-            "Precipitación",
-            "Urbanización",
-            "NDVI (vegetación)",
-            "PM2.5 (contaminación)",
-            "PIB per cápita",
-            "Índice de salud",
-            "Índice educativo",
-            "IVU extendido"
+            "Population density",
+            "Surface temperature (LST)",
+            "Precipitation (GPM)",
+            "Urban footprint (GHSL)",
+            "NDVI (vegetation)",
+            "PM2.5 (air pollution)",
+            "GDP per capita",
+            "Health index",
+            "Education index",
+            "Extended UVI"
         ],
-        default=["Temperatura superficial", "Precipitación", "IVU extendido"]
+        default=["Surface temperature (LST)", "Precipitation (GPM)", "Extended UVI"]
     )
 
 # ----------------------------------------------------------
-# FILTRAR DATOS POR AÑO
+# FILTER DATA BY YEAR
 # ----------------------------------------------------------
 df = data.query("year == @year").copy()
 
 # ----------------------------------------------------------
-# INDICADORES CLAVE
+# KEY INDICATORS
 # ----------------------------------------------------------
-st.header(f"📊 Indicadores integrados — Año {year}")
+st.header(f"📊 Integrated indicators — Year {year}")
 col1, col2, col3, col4 = st.columns(4)
-col1.metric("Población total (miles)", f"{df['population_k'].sum():,.0f}")
-col2.metric("Temp. promedio (°C)", f"{df['lst_c'].mean():.1f}")
-col3.metric("Lluvia promedio (mm)", f"{df['rain_mm'].mean():.0f}")
-col4.metric("IVU Extendido (0–1)", f"{df['IVU_ext'].mean():.3f}")
+col1.metric("Total population (thousands)", f"{df['population_k'].sum():,.0f}")
+col2.metric("Avg. temperature (°C)", f"{df['lst_c'].mean():.1f}")
+col3.metric("Avg. precipitation (mm)", f"{df['rain_mm'].mean():.0f}")
+col4.metric("Extended UVI (0–1)", f"{df['IVU_ext'].mean():.3f}")
 
 # ----------------------------------------------------------
-# SUBPLOTS GEOGRÁFICOS
+# COMPARATIVE MAPS (SUBPLOTS)
 # ----------------------------------------------------------
-st.subheader("🗺️ Mapas comparativos por indicador")
+st.subheader("🗺️ Comparative charts by indicator")
 
 if len(selected_layers) == 0:
-    st.warning("Selecciona al menos un indicador.")
+    st.warning("Select at least one indicator.")
 else:
-    # Mapear variables a columnas del dataset
+    # Map indicators to dataset columns
     layer_map = {
-        "Densidad poblacional": ("density_ppkm2", "Viridis"),
-        "Temperatura superficial": ("lst_c", "Hot"),
-        "Precipitación": ("rain_mm", "Blues"),
-        "Urbanización": ("urban_intensity", "Greys"),
-        "NDVI (vegetación)": ("ndvi", "Greens"),
-        "PM2.5 (contaminación)": ("pm25", "Reds"),
-        "PIB per cápita": ("gdp_pc", "Tealgrn"),
-        "Índice de salud": ("health_index", "YlGnBu"),
-        "Índice educativo": ("edu_index", "Purples"),
-        "IVU extendido": ("IVU_ext", "RdYlGn_r")
+        "Population density": ("density_ppkm2", "Viridis"),
+        "Surface temperature (LST)": ("lst_c", "Hot"),
+        "Precipitation (GPM)": ("rain_mm", "Blues"),
+        "Urban footprint (GHSL)": ("urban_intensity", "Greys"),
+        "NDVI (vegetation)": ("ndvi", "Greens"),
+        "PM2.5 (air pollution)": ("pm25", "Reds"),
+        "GDP per capita": ("gdp_pc", "Tealgrn"),
+        "Health index": ("health_index", "YlGnBu"),
+        "Education index": ("edu_index", "Purples"),
+        "Extended UVI": ("IVU_ext", "RdYlGn_r")
     }
 
     n_layers = len(selected_layers)
@@ -163,49 +162,49 @@ else:
 
     fig.update_layout(
         height=500,
-        title_text="Comparación de indicadores urbanos y ambientales",
+        title_text="Comparison of urban and environmental indicators",
         showlegend=False,
         template="plotly_white"
     )
     st.plotly_chart(fig, use_container_width=True)
 
 # ----------------------------------------------------------
-# EVOLUCIÓN TEMPORAL
+# TEMPORAL EVOLUTION
 # ----------------------------------------------------------
-st.subheader("📈 Evolución temporal 2000–2025")
+st.subheader("📈 Temporal evolution 2000–2025")
 
 time_options = ["population_k", "lst_c", "rain_mm", "IVU_ext", "pm25", "ndvi", "gdp_pc"]
-sel_time_var = st.selectbox("Selecciona variable temporal", time_options, index=3)
+sel_time_var = st.selectbox("Select temporal variable", time_options, index=3)
 
 fig_t = px.line(
     data,
     x="year",
     y=sel_time_var,
     color="district",
-    title=f"Evolución temporal de {sel_time_var} (2000–2025)",
+    title=f"Temporal evolution of {sel_time_var} (2000–2025)",
     markers=True
 )
 st.plotly_chart(fig_t, use_container_width=True)
 
 # ----------------------------------------------------------
-# TABLA Y EXPORTACIÓN
+# DATA TABLE & EXPORT
 # ----------------------------------------------------------
-st.subheader("🧮 Tabla de datos integrados")
+st.subheader("🧮 Integrated data table")
 st.dataframe(df, use_container_width=True)
 st.download_button(
-    "⬇️ Descargar CSV del año seleccionado",
+    "⬇️ Download CSV for selected year",
     data=df.to_csv(index=False).encode("utf-8"),
     file_name=f"dar_es_salaam_integrated_{year}.csv",
     mime="text/csv"
 )
 
 # ----------------------------------------------------------
-# PIE DE PÁGINA
+# FOOTER
 # ----------------------------------------------------------
 st.markdown("""
 ---
-**Fuentes integradas:**  
-🌡️ NASA MODIS (LST) · 🌧️ NASA GPM IMERG (precipitación) · 👥 SEDAC / WorldPop (población) ·  
-🏙️ Copernicus GHSL / ESA WorldCover (urbanización) · 💰 Banco Mundial / WHO (PIB, salud, educación)  
-🛰️ Prototipo educativo — NASA Space Apps Challenge 2025
+**Integrated sources:**  
+🌡️ NASA MODIS (LST) · 🌧️ NASA GPM IMERG (precipitation) · 👥 SEDAC / WorldPop (population) ·  
+🏙️ Copernicus GHSL / ESA WorldCover (urban footprint) · 💰 World Bank / WHO (GDP, health, education)  
+🛰️ Educational prototype — NASA Space Apps Challenge 2025
 """)
